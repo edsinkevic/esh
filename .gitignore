@@ -1,2 +1,4 @@
 build
 esh
+cmake-build-debug
+.idea
