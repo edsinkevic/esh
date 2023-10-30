@@ -21,6 +21,8 @@ int esh_proc_status_from_waitpid(pid_t result, int status) {
             return ESH_PROC_STOPPED;
         } else if (WIFSIGNALED(status)) {
             return ESH_PROC_TERMINATED;
+        } else if (WIFCONTINUED(status)) {
+            return ESH_PROC_RUNNING;
         }
     }
 

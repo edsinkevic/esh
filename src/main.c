@@ -9,6 +9,7 @@
 #include "esh_kill.h"
 #include "esh_fg.h"
 #include "esh_proc.h"
+#include "esh_bg.h"
 
 #define IO_BUFFER_SIZE 256
 
@@ -55,6 +56,10 @@ int main() {
         }
 
         if (esh_fg_handle(tokens)) {
+            continue;
+        }
+
+        if (esh_bg_handle(tokens)) {
             continue;
         }
 

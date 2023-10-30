@@ -15,8 +15,8 @@
 
 void esh_handler(int sig) {
     switch (sig) {
-        case SIGSTOP:
-            if (kill(ESH_PROC_FG->pid, SIGSTOP) == -1) {
+        case SIGTSTP:
+            if (kill(ESH_PROC_FG->pid, SIGTSTP) == -1) {
                 fprintf(stderr, "Could not send signal %d: %s\n", ESH_PROC_FG->pid, strerror(errno));
             }
             break;
@@ -45,10 +45,11 @@ int esh_fg_handle(char **ts) {
     signal(SIGTTIN, SIG_IGN);
     signal(SIGTTOU, SIG_IGN);
 
-    signal(SIGSTOP, esh_handler);
     ESH_PROC_FG = proc;
 
     tcsetpgrp(STDIN_FILENO, pid);
+
+    signal(SIGTSTP, esh_handler);
 
     int status;
     int result = waitpid(pid, &status, WUNTRACED);
@@ -56,7 +57,7 @@ int esh_fg_handle(char **ts) {
     tcsetpgrp(STDIN_FILENO, getpgrp());
     signal(SIGTTIN, SIG_DFL);
     signal(SIGTTOU, SIG_DFL);
-    signal(SIGSTOP, SIG_DFL);
+    signal(SIGTSTP, SIG_DFL);
 
     if (WIFSTOPPED(status)) {
         printf("[%d] suspended\n", pid);

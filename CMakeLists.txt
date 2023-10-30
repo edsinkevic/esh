@@ -15,4 +15,6 @@ add_executable(esh ${SRC}/main.c ${SRC}/esh_array.c
         src/esh_fg.c
         src/esh_proc.c
         src/esh_utils.c
+        src/esh_bg.h
+        src/esh_bg.c
 )
