@@ -1,9 +1,12 @@
 #include "esh_control.h"
+#include "esh_proc.h"
+#include "esh_utils.h"
 #include <string.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
+#include <assert.h>
 
 int esh_control_handle(char **ts) {
     pid_t childpid;
@@ -29,7 +32,9 @@ int esh_control_handle(char **ts) {
     }
 
     if (childpid > 0) {
-        printf("Started background process %d\n", childpid);
+        esh_proc *p = esh_proc_add(childpid, esh_strdup(ts[0]));
+        assert(p);
+        printf("Started background process %d with id %d\n", childpid, p->id);
         return 1;
     }
 

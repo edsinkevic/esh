@@ -8,6 +8,7 @@
 #include "esh_cmd.h"
 #include "esh_kill.h"
 #include "esh_fg.h"
+#include "esh_proc.h"
 
 #define IO_BUFFER_SIZE 256
 
@@ -40,7 +41,6 @@ int main() {
         }
 
         tokens = esh_tokenize(IO_BUFFER);
-        esh_array_print(tokens);
 
         if (esh_exit(tokens)) {
             break;
@@ -55,6 +55,11 @@ int main() {
         }
 
         if (esh_fg_handle(tokens)) {
+            continue;
+        }
+
+        if (esh_array_length(tokens) == 1 && strcmp(tokens[0], "jobs") == 0) {
+            esh_proc_print();
             continue;
         }
 

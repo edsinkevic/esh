@@ -3,29 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include "esh_array.h"
-
-char *strduplicate(char *org) {
-    unsigned int org_size;
-    static char *dup;
-    char *dup_offset;
-
-    /* Allocate memory for duplicate */
-    org_size = strlen(org);
-    dup = (char *) malloc(sizeof(char) * org_size + 1);
-    if (dup == NULL)
-        return ((char *) NULL);
-
-    /* Copy string */
-    dup_offset = dup;
-    while (*org) {
-        *dup_offset = *org;
-        dup_offset++;
-        org++;
-    }
-    *dup_offset = '\0';
-
-    return (dup);
-}
+#include "esh_utils.h"
 
 size_t esh_array_length(char **ts) {
     size_t n = 0;
@@ -42,7 +20,7 @@ char **esh_tokenize(char *input) {
 
     if (token) {
         ts = malloc(sizeof(char *));
-        ts[0] = strduplicate(token);
+        ts[0] = esh_strdup(token);
     }
 
     size_t n = 1;
@@ -52,7 +30,7 @@ char **esh_tokenize(char *input) {
         assert(allocated);
 
         ts = allocated;
-        ts[n] = strduplicate(token);
+        ts[n] = esh_strdup(token);
         n++;
     }
 
