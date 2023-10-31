@@ -7,4 +7,7 @@
 
 char *esh_strdup(char *org);
 
+int esh_streq(char *a, char *b);
+
+
 #endif //ESH_ESH_UTILS_H

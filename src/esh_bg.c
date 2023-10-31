@@ -9,10 +9,11 @@
 #include "esh_bg.h"
 #include "esh_array.h"
 #include "esh_proc.h"
+#include "esh_utils.h"
 
 int esh_bg_handle(char **ts) {
     size_t n = esh_array_length(ts);
-    int is_bg = n == 2 && strcmp(ts[0], "bg") == 0;
+    int is_bg = n == 2 && esh_streq(ts[0], "bg");
     if (!is_bg) {
         return 0;
     }
@@ -23,11 +24,16 @@ int esh_bg_handle(char **ts) {
         return 1;
     }
 
+    if (p->status != ESH_PROC_STOPPED) {
+        fprintf(stderr, "%d process is not suspended\n", id);
+        return 1;
+    }
+
     if (kill(p->pid, SIGCONT) == -1) {
         fprintf(stderr, "Could not send signal %d: %s\n", p->pid, strerror(errno));
         return 1;
     }
 
-    p->status = esh_proc_status(p);
+    esh_proc_refresh_status(p);
     return 1;
 }

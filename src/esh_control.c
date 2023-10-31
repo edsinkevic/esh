@@ -11,7 +11,7 @@
 int esh_control_handle(char **ts) {
     pid_t childpid;
     size_t n = esh_array_length(ts);
-    int should_handle = n > 1 && strcmp(ts[n - 1], "&") == 0;
+    int should_handle = n > 1 && esh_streq(ts[n - 1], "&");
 
     if (!should_handle) {
         return 0;

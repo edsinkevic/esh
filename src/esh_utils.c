@@ -11,13 +11,11 @@ char *esh_strdup(char *org) {
     static char *dup;
     char *dup_offset;
 
-    /* Allocate memory for duplicate */
     org_size = strlen(org);
     dup = (char *) malloc(sizeof(char) * org_size + 1);
     if (dup == NULL)
         return ((char *) NULL);
 
-    /* Copy string */
     dup_offset = dup;
     while (*org) {
         *dup_offset = *org;
@@ -27,4 +25,8 @@ char *esh_strdup(char *org) {
     *dup_offset = '\0';
 
     return (dup);
+}
+
+int esh_streq(char *a, char *b) {
+    return strcmp(a, b) == 0;
 }

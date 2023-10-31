@@ -11,21 +11,12 @@
 #include "esh_fg.h"
 #include "esh_array.h"
 #include "esh_proc.h"
+#include "esh_utils.h"
 
-
-void esh_handler(int sig) {
-    switch (sig) {
-        case SIGTSTP:
-            if (kill(ESH_PROC_FG->pid, SIGTSTP) == -1) {
-                fprintf(stderr, "Could not send signal %d: %s\n", ESH_PROC_FG->pid, strerror(errno));
-            }
-            break;
-    }
-}
 
 int esh_fg_handle(char **ts) {
     size_t n = esh_array_length(ts);
-    int is_fg = n == 2 && strcmp(ts[0], "fg") == 0;
+    int is_fg = n == 2 && esh_streq(ts[0], "fg");
 
     if (!is_fg) {
         return 0;
@@ -40,32 +31,25 @@ int esh_fg_handle(char **ts) {
         return 1;
     }
 
+    if (proc->status != ESH_PROC_RUNNING) {
+        fprintf(stderr, "%d process is not running\n", id);
+        return 1;
+    }
+
     int pid = proc->pid;
 
-    signal(SIGTTIN, SIG_IGN);
-    signal(SIGTTOU, SIG_IGN);
-
-    ESH_PROC_FG = proc;
-
-    tcsetpgrp(STDIN_FILENO, pid);
-
-    signal(SIGTSTP, esh_handler);
+    esh_proc_fg_mode_enable(proc);
 
     int status;
     int result = waitpid(pid, &status, WUNTRACED);
-
-    tcsetpgrp(STDIN_FILENO, getpgrp());
-    signal(SIGTTIN, SIG_DFL);
-    signal(SIGTTOU, SIG_DFL);
-    signal(SIGTSTP, SIG_DFL);
 
     if (WIFSTOPPED(status)) {
         printf("[%d] suspended\n", pid);
     }
 
-    ESH_PROC_FG->status = esh_proc_status_from_waitpid(result, status);
+    proc->status = esh_proc_status_from_waitpid(result, status);
 
-    ESH_PROC_FG = NULL;
+    esh_proc_fg_mode_disable();
 
     return 1;
 }
